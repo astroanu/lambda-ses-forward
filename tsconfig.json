@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "lib": ["es2017"],
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/*.spec.*"],
+  "scripts": {
+    "package": "sam package --template-file template.yaml --s3-bucket sam-sdf --output-template-file packaged.yaml --profile sam",
+    "deploy": "sam deploy --template-file packaged.yaml --stack-name email-forwarder --profile sam --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND --parameter-overrides $(jq -r -j 'to_entries[] | \"\\(.key)=\\(.value) \"' env.json)"
+  }
+}
