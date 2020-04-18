@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    Tracing: Active
+    Timeout: 30
+
+Resources:
+  ForwardEmail:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: forward-email.default
+      CodeUri: ./dist/forward-email

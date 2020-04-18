@@ -1,0 +1,21 @@
+{
+  "name": "lambda-ses-forward",
+  "version": "1.0.0",
+  "description": "Forward emails on ses event trigger",
+  "main": "index.js",
+  "repository": "git@github.com:astroanu/lambda-ses-forward.git",
+  "author": "anuradha <astroanu2004@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "aws-lambda": "^1.0.5",
+    "aws-sdk": "^2.658.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.50",
+    "@types/node": "^13.13.0",
+    "ts-loader": "^7.0.0",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1"
+  }
+}
