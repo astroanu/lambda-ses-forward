@@ -8,8 +8,19 @@ Globals:
     Timeout: 30
 
 Resources:
+  ReceivedTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: EmailReceivedTopic
+      TopicName: EmailReceivedTopic
+
   ForwardEmail:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: forward-email.default
-      CodeUri: ./dist/forward-email
+      Handler: forward.default
+      CodeUri: ./dist/forwarder/forward
+      Events:
+        Notified:
+          Type: SNS
+          Properties:
+            Topic: !Ref ReceivedTopic
