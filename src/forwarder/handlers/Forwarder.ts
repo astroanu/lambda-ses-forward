@@ -1,33 +1,56 @@
-import { SNSEvent, Context, Callback, SNSHandler } from "aws-lambda";
 import { IEnvironmentProvider } from "../../../lib/providers/EnvironmentProvider";
+import { IEmailProvider } from "../../../lib/providers/EmailProvider";
+import {
+  SNSEventHandler,
+  SESNotificationMessage,
+} from "../../../lib/handlers/SNSEventHandler";
+import { map } from "../../../map";
+export class Forwarder extends SNSEventHandler {
+  async handle(): Promise<object> {
+    console.log(map);
 
-export class Forwarder {
-  private event: SNSEvent;
+    const queue = this.event.Records.map((record) => {
+      console.log(record);
 
-  async handle(): Promise<boolean> {
-    this.event.Records.forEach((record) => {
-      console.log(record.Sns.Message);
+      const message: SESNotificationMessage = JSON.parse(record.Sns.Message);
+
+      const toEmail = this.getToEmails(message.mail.destination[0]);
+      const fromEmail = this.getToEmails("*");
+
+      return this.emailProvider.send({
+        returnPath: fromEmail[0],
+        destination: {
+          to: toEmail,
+        },
+        message: {
+          body: {
+            html: message.content,
+          },
+          subject: message.mail.commonHeaders.subject,
+          from: fromEmail[0],
+        },
+      });
     });
 
-    return true;
-  }
+    console.log("result", await Promise.all(queue));
 
-  getHandler(): Function {
-    return async (
-      event: SNSEvent,
-      context: Context,
-      callback: Callback
-    ): Promise<boolean> => {
-      try {
-        this.event = event;
-
-        return await this.handle();
-      } catch (e) {
-        console.trace(e);
-        return false;
-      }
+    return {
+      message: "ok",
     };
   }
 
-  constructor(private environment: IEnvironmentProvider) {}
+  getToEmails(fromEmail: string): Array<string> {
+    if (map[fromEmail]) {
+      return map[fromEmail];
+    } else {
+      return map["*"];
+    }
+  }
+
+  constructor(
+    private environment: IEnvironmentProvider,
+    private emailProvider: IEmailProvider
+  ) {
+    super(environment);
+  }
 }

@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  IdentityName:
+    Type: String
+
 Globals:
   Function:
     Runtime: nodejs12.x
@@ -24,3 +28,6 @@ Resources:
           Type: SNS
           Properties:
             Topic: !Ref ReceivedTopic
+      Policies:
+        - SESCrudPolicy:
+            IdentityName: !Ref IdentityName

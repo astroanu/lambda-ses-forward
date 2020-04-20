@@ -1,4 +1,4 @@
 node_modules
-map.json
+map.ts
 dist
 packaged.yaml
